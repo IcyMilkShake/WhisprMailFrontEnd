@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhisprMail - Lightweight Email Client for Gmail</title>
+    <meta name="description" content="A lightweight desktop email client for Gmail, focused on privacy and simplicity. Monitor, manage, and analyze your emails with AI-powered features.">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Gmail-inspired light section */
+        .light-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative lines */
+        .light-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            width: 3px;
+            height: 40vh;
+            background: linear-gradient(to bottom, #ea4335, transparent);
+            animation: slideDown 3s ease-out infinite;
+            animation-delay: 0s;
+        }
+
+        .light-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 15%;
+            width: 2px;
+            height: 35vh;
+            background: linear-gradient(to bottom, #34a853, transparent);
+            animation: slideDown 3s ease-out infinite;
+            animation-delay: 1s;
+        }
+
+        .decorative-line-1 {
+            position: absolute;
+            top: 0;
+            left: 25%;
+            width: 4px;
+            height: 45vh;
+            background: linear-gradient(to bottom, #1a73e8, transparent);
+            animation: slideDown 3s ease-out infinite;
+            animation-delay: 0.5s;
+        }
+
+        .decorative-line-2 {
+            position: absolute;
+            top: 0;
+            right: 30%;
+            width: 2px;
+            height: 30vh;
+            background: linear-gradient(to bottom, #fbbc04, transparent);
+            animation: slideDown 3s ease-out infinite;
+            animation-delay: 1.5s;
+        }
+
+        .decorative-line-3 {
+            position: absolute;
+            top: 0;
+            left: 5%;
+            width: 1px;
+            height: 25vh;
+            background: linear-gradient(to bottom, #9aa0a6, transparent);
+            animation: slideDown 3s ease-out infinite;
+            animation-delay: 2s;
+        }
+
+        @keyframes slideDown {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1a73e8;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #5f6368;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #1a73e8;
+        }
+
+        .hero {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #202124;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #5f6368;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #5f6368;
+            border: 2px solid #dadce0;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card:nth-child(1) .feature-icon { color: #ea4335; }
+        .feature-card:nth-child(2) .feature-icon { color: #fbbc04; }
+        .feature-card:nth-child(3) .feature-icon { color: #34a853; }
+        .feature-card:nth-child(4) .feature-icon { color: #1a73e8; }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #202124;
+        }
+
+        .feature-card p {
+            color: #5f6368;
+            line-height: 1.6;
+        }
+
+        /* Dark Discord-like section */
+        .dark-section {
+            background: linear-gradient(135deg, #2c2f33 0%, #23272a 100%);
+            color: #dcddde;
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated background elements */
+        .dark-section::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: -10%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(114, 137, 218, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .dark-section::after {
+            content: '';
+            position: absolute;
+            bottom: 20%;
+            right: -5%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(67, 181, 129, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 4s ease-in-out infinite reverse;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.05;
+        }
+
+        .shape-1 {
+            top: 15%;
+            right: 20%;
+            width: 60px;
+            height: 60px;
+            background: #7289da;
+            transform: rotate(45deg);
+            animation: rotate 10s linear infinite;
+        }
+
+        .shape-2 {
+            bottom: 30%;
+            left: 10%;
+            width: 40px;
+            height: 40px;
+            background: #43b581;
+            border-radius: 50%;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .shape-3 {
+            top: 40%;
+            left: 80%;
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 45px solid #faa61a;
+            animation: bounce2 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            33% { transform: translateY(-20px) translateX(10px); }
+            66% { transform: translateY(10px) translateX(-5px); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(45deg); }
+            to { transform: rotate(405deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.05; }
+            50% { transform: scale(1.2); opacity: 0.1; }
+        }
+
+        @keyframes bounce2 {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .dark-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .dark-section h2 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            background: linear-gradient(135deg, #7289da, #99aab5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dark-section p {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            color: #b9bbbe;
+        }
+
+        .tech-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .tech-card {
+            background: rgba(54, 57, 63, 0.8);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #40444b;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #7289da, transparent);
+            transition: left 0.5s ease;
+        }
+
+        .tech-card:hover::before {
+            left: 100%;
+        }
+
+        .tech-card:hover {
+            background: rgba(54, 57, 63, 1);
+            border-color: #7289da;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(114, 137, 218, 0.2);
+        }
+
+        .tech-card h4 {
+            color: #7289da;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .tech-card p {
+            color: #b9bbbe;
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: #18191c;
+            color: #b9bbbe;
+            padding: 3rem 2rem 1rem;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #7289da;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #ffffff;
+        }
+
+        .footer p {
+            font-size: 0.9rem;
+            color: #72767d;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .dark-section h2 {
+                font-size: 2.2rem;
+            }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">WhisprMail</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="/privacy-policy" target="_blank">Privacy Policy</a></li>
+            <li><a href="/terms-of-service" target="_blank">Terms of Service</a></li>
+        </ul>
+    </nav>
+
+    <!-- Light Gmail-inspired Section -->
+    <section id="home" class="light-section">
+        <div class="decorative-line-1"></div>
+        <div class="decorative-line-2"></div>
+        <div class="decorative-line-3"></div>
+        
+        <div class="hero">
+            <h1>WhisprMail</h1>
+            <p>A lightweight desktop email client for Gmail, focused on privacy and simplicity. Monitor, manage, and analyze your emails with AI-powered features.</p>
+            
+            <div class="cta-buttons">
+                <a href="#download" class="btn btn-primary">
+                    <i class="fas fa-download"></i>
+                    Download for Windows
+                </a>
+                <a href="https://github.com/IcyMilkShake/whisprmail" target="_blank" class="btn btn-secondary">
+                    <i class="fab fa-github"></i>
+                    View Source on GitHub
+                </a>
+            </div>
+
+            <div id="features" class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-envelope-open"></i>
+                    </div>
+                    <h3>Email Monitoring</h3>
+                    <p>Real-time email monitoring with instant notifications for new messages in your Gmail account.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>Quick Actions</h3>
+                    <p>Mark, star, view, and delete emails instantly without opening your browser.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Privacy Focused</h3>
+                    <p>Your data stays secure with end-to-end encryption and no data collection.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-feather"></i>
+                    </div>
+                    <h3>Lightweight</h3>
+                    <p>Minimal resource usage with a clean, intuitive interface that doesn't slow down your system.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down" style="font-size: 2rem; color: #5f6368;"></i>
+        </div>
+    </section>
+
+    <!-- Dark Discord-like Section -->
+    <section id="about" class="dark-section">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        
+        <div class="dark-content">
+            <h2>Powered by AI Intelligence</h2>
+            <p>WhisprMail goes beyond basic email management with advanced AI features that help you stay productive and organized. Our intelligent system analyzes your emails to provide actionable insights.</p>
+            
+            <div class="tech-features">
+                <div class="tech-card">
+                    <h4><i class="fas fa-brain"></i> AI Summarization</h4>
+                    <p>Get instant summaries of lengthy emails, helping you understand the key points without reading through everything.</p>
+                </div>
+                <div class="tech-card">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Urgency Detection</h4>
+                    <p>AI-powered tone analysis identifies urgent emails and prioritizes them in your inbox automatically.</p>
+                </div>
+                <div class="tech-card">
+                    <h4><i class="fas fa-chart-line"></i> Reading Out</h4>
+                    <p>Speaks the name of the author as well as the email subject.</p>
+                </div>
+                <div class="tech-card">
+                    <h4><i class="fas fa-filter"></i> Limiting Author's</h4>
+                    <p>Advanced filtering system that lets you add Authors that you only want to receive.</p>
+                </div>
+                <div class="tech-card">
+                    <h4><i class="fas fa-moon"></i> Dark Mode Ready</h4>
+                    <p>Beautiful dark interface that's easy on your eyes during long email sessions.</p>
+                </div>
+                <div class="tech-card">
+                    <h4><i class="fas fa-cogs"></i> Customizable</h4>
+                    <p>Tailor the experience to your workflow with extensive customization options and shortcuts.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="/privacy-policy" target="_blank">Privacy Policy</a>
+            <a href="/terms-of-service" target="_blank">Terms of Service</a>
+            <a href="https://github.com/IcyMilkShake/whisprmail" target="_blank">GitHub Repository</a>
+            <a href="mailto:sirapat.sermcheep@gmail.com">Support</a>
+        </div>
+        <p>&copy; 2025 WhisprMail. All rights reserved. A privacy-focused email client for Gmail.</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navbar.style.boxShadow = 'none';
+            }
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe feature cards and tech cards
+        document.querySelectorAll('.feature-card, .tech-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
