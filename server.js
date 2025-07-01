@@ -1,25 +1,20 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 
 const app = express();
 const PORT = 8080;
 
-console.log("Serving static files from:", __dirname);
-
 app.use(express.static(__dirname));
 
-// Debug route to check if file exists
-app.get('/test-file', (req, res) => {
-  const filePath = path.join(__dirname, 'privacy-policy.html');
-  fs.access(filePath, fs.constants.F_OK, (err) => {
-    if (err) {
-      return res.status(404).send('privacy-policy.html NOT found');
-    }
-    res.send('privacy-policy.html exists and accessible');
-  });
+// Explicit routes for pretty URLs
+app.get('/privacy-policy', (req, res) => {
+  res.sendFile(path.join(__dirname, 'privacy-policy.html'));
+});
+
+app.get('/terms-of-service', (req, res) => {
+  res.sendFile(path.join(__dirname, 'terms-of-service.html'));
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}/`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
